@@ -30,13 +30,34 @@ jobs:
         run: |
           pyinstaller --noconfirm --clean RDR2_L10N_Tool.spec
 
-      - name: Zip dist folder
+      - name: Zip dist output
         shell: pwsh
         run: |
-          $src = "dist\RDR2_L10N_Tool"
           $zip = "RDR2_L10N_Tool_windows.zip"
           if (Test-Path $zip) { Remove-Item $zip -Force }
-          Compress-Archive -Path "$src\*" -DestinationPath $zip
+
+          $folder = "dist\RDR2_L10N_Tool"
+          $exe = "dist\RDR2_L10N_Tool.exe"
+
+          if (Test-Path $folder) {
+            Compress-Archive -Path "$folder\*" -DestinationPath $zip
+            Write-Host "Zipped folder: $folder"
+            exit 0
+          }
+
+          if (Test-Path $exe) {
+            Compress-Archive -Path $exe -DestinationPath $zip
+            Write-Host "Zipped exe: $exe"
+            exit 0
+          }
+
+          Write-Host "Expected outputs not found."
+          Write-Host "Looking for anything in dist/:"
+          if (Test-Path "dist") {
+            Get-ChildItem -Path "dist" -Recurse -Force | Select-Object FullName
+          }
+          exit 1
+
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -49,3 +70,16 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: RDR2_L10N_Tool_windows.zip
+
+      - name: Debug dist contents
+        shell: pwsh
+        run: |
+          Write-Host "Workspace: $PWD"
+          if (Test-Path "dist") {
+            Write-Host "dist/ exists. Contents:"
+            Get-ChildItem -Path "dist" -Force
+            Write-Host "Recursive dist listing:"
+            Get-ChildItem -Path "dist" -Recurse -Force | Select-Object FullName
+          } else {
+            Write-Host "dist/ is missing"
+          }
