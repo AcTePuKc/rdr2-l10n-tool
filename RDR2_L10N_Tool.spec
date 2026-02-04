@@ -1,8 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
 from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
-app_name = "RDR2_L10N_Tool"
+icon_path = "assets/icon.ico"
+if not os.path.exists(icon_path):
+    icon_path = None
+
+app_name = "RDR2 L10N Tool"
 
 hiddenimports = []
 hiddenimports += collect_submodules("PySide6")
@@ -40,7 +45,7 @@ exe = EXE(
     strip=False,
     upx=False,
     console=False,  # GUI app
-    icon="assets/icon.ico",
+    icon=icon_path,
 )
 
 coll = COLLECT(
