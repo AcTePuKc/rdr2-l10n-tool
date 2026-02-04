@@ -1,0 +1,10 @@
+[project]
+name = "rdr2-l10n-tool"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+  "pyside6>=6.6",
+]
+
+[tool.uv]
+dev-dependencies = []
